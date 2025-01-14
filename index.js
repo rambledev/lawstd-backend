@@ -21,6 +21,8 @@ app.use(cors({
     methods: ['GET', 'POST', 'DELETE'], // กำหนดวิธีการที่อนุญาต
 }));
 
+console.log("xxxxxxxxxx cors origin = 'http://localhost:4173', 'https://lawstd.rmu.ac.th'");
+
 // API สำหรับล็อกอินผู้ดูแลระบบ
 app.post('/api/login-admin', async (req, res, next) => {
   const { username, password } = req.body;
