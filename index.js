@@ -22,7 +22,7 @@ app.use(cors({
     credentials: true // อนุญาตให้ส่ง Cookies
 }));
 
-console.log("xxxxxxxxxx- cors origin = *'");
+console.log("xxxxxxxxxx- cors origin = *");
 
 // API สำหรับล็อกอินผู้ดูแลระบบ
 app.post('/api/login-admin', async (req, res, next) => {
@@ -47,6 +47,13 @@ app.post('/api/login-admin', async (req, res, next) => {
     if (!isMatch) {
       return res.status(401).json({ message: 'Password is incorrect' });
     }
+
+    // ตั้งค่าคุกกี้หลังจากล็อกอินสำเร็จ
+    const cookieOptions = {
+      sameSite: 'None',
+      secure: true, // ต้องใช้ HTTPS
+    };
+    res.cookie('adminId', admin.id, cookieOptions); // ตั้งค่าคุกกี้ที่นี่
 
     res.json({ message: 'Login successful', adminId: admin.id });
   } catch (err) {

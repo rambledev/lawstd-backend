@@ -1,0 +1,18 @@
+# Directories
+node_modules/
+coverage/
+dist/
+
+# Environment Variables
+.env
+
+# Logs
+*.log
+
+# OS Specific Files
+.DS_Store       # For macOS
+Thumbs.db       # For Windows
+
+# IDEs and Editors
+.vscode/
+*.sublime-workspace
