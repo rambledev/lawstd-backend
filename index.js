@@ -17,11 +17,11 @@ const logQuery = (query, replacements) => {
 
 // cors
 app.use(cors({
-    origin: ['http://localhost:4173', 'https://lawstd.rmu.ac.th'],
+    origin: ['http://localhost:3000','http://localhost:4173', 'https://lawstd.rmu.ac.th'],
     methods: ['GET', 'POST', 'DELETE'], // กำหนดวิธีการที่อนุญาต
 }));
 
-console.log("xxxxxxxxxx cors origin = 'http://localhost:4173', 'https://lawstd.rmu.ac.th'");
+console.log("xxxxxxxxxx cors origin = http://localhost:3000','http://localhost:4173', 'https://lawstd.rmu.ac.th'");
 
 // API สำหรับล็อกอินผู้ดูแลระบบ
 app.post('/api/login-admin', async (req, res, next) => {
