@@ -17,12 +17,12 @@ const logQuery = (query, replacements) => {
 
 // cors
 app.use(cors({
-    origin: ['*'],
+    origin: ['http://localhost:5173','https://lawstd.rmu.ac.th/'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // กำหนดวิธีการที่อนุญาต
     credentials: true // อนุญาตให้ส่ง Cookies
 }));
 
-console.log("xxxxxxxxxx- cors origin = *");
+console.log("xxxxxxxxxx-2- cors origin = *");
 
 // API สำหรับล็อกอินผู้ดูแลระบบ
 app.post('/api/login-admin', async (req, res, next) => {
