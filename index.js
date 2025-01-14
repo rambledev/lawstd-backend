@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const db = require('./db'); // เชื่อมต่อฐานข้อมูล
 const bcrypt = require('bcryptjs');
+const cors = require('cors');
 
 const app = express();
 const port = 3000;
@@ -13,6 +14,12 @@ app.use(bodyParser.json());
 const logQuery = (query, replacements) => {
   console.log("Executing query:", query, "with parameters:", replacements);
 };
+
+// cors
+app.use(cors({
+    origin: ['http://localhost:3000', 'https://lawstd.rmu.ac.th'],
+    methods: ['GET', 'POST', 'DELETE'], // กำหนดวิธีการที่อนุญาต
+}));
 
 // API สำหรับล็อกอินผู้ดูแลระบบ
 app.post('/api/login-admin', async (req, res, next) => {
