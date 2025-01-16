@@ -150,7 +150,8 @@ app.put('/api/subjects/:id', async (req, res, next) => {
       type: db.QueryTypes.UPDATE
     });
 
-    if (result[0].affectedRows === 0) {
+    // ตรวจสอบผลลัพธ์ของ result[0] ว่าเป็นวัตถุที่คุณต้องการไหม
+    if (result[0] && result[0].affectedRows === 0) {
       // ถ้าไม่มีแถวที่ถูกอัปเดต
       return res.status(404).json({ error: 'Subject not found' });
     }
