@@ -156,10 +156,11 @@ app.put('/api/subjects/:id', async (req, res, next) => {
     }
 
     res.status(200).json({ message: 'Subject updated successfully!' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Database error' , str: err });
-  }
+} catch (err) {
+    console.error("Error occurred while updating:", err); // Log ข้อผิดพลาด
+    console.error("Failed query:", query, [sub_code, sub_name, sub_program, sub_unit, sub_term, sub_teacher, id]); // Log คำสั่ง SQL
+    res.status(500).json({ error: 'Database error', str: err.message }); // ส่งข้อความผิดพลาดกลับไป
+}
 });
 
 // API สำหรับการจัดการ VDO
