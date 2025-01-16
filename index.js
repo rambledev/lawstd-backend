@@ -130,6 +130,38 @@ app.post('/api/subjects', async (req, res, next) => {
   }
 });
 
+// API สำหรับการอัปเดตรายวิชา
+app.put('/api/subjects/:id', async (req, res, next) => {
+  const { id } = req.params; // ดึง id จาก URL
+  const { sub_code, sub_name, sub_program, sub_unit, sub_term, sub_teacher } = req.body;
+
+  if (!sub_code || !sub_name || !sub_program || !sub_unit || !sub_term || !sub_teacher) {
+    return res.status(400).json({ error: 'All fields are required' });
+  }
+
+  try {
+    const query =
+      'UPDATE tb_subject SET sub_code = ?, sub_name = ?, sub_program = ?, sub_unit = ?, sub_term = ?, sub_teacher = ? WHERE id = ?';
+    
+    logQuery(query, [sub_code, sub_name, sub_program, sub_unit, sub_term, sub_teacher, id]);
+
+    const result = await db.query(query, {
+      replacements: [sub_code, sub_name, sub_program, sub_unit, sub_term, sub_teacher, id],
+      type: db.QueryTypes.UPDATE
+    });
+
+    if (result[0].affectedRows === 0) {
+      // ถ้าไม่มีแถวที่ถูกอัปเดต
+      return res.status(404).json({ error: 'Subject not found' });
+    }
+
+    res.status(200).json({ message: 'Subject updated successfully!' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
 // API สำหรับการจัดการ VDO
 app.get('/api/vdos', async (req, res) => {
   try {
