@@ -158,7 +158,7 @@ app.put('/api/subjects/:id', async (req, res, next) => {
     res.status(200).json({ message: 'Subject updated successfully!' });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Database error' });
+    res.status(500).json({ error: 'Database error' , str: err });
   }
 });
 
