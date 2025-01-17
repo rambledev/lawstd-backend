@@ -279,7 +279,7 @@ app.delete('/api/vdos/:id', async (req, res) => {
 // API สำหรับการดึงเอกสารทั้งหมด
 app.get('/api/doc', async (req, res) => {
   try {
-    const query = 'SELECT * FROM tb_doc';
+    const query = 'SELECT * FROM tb_files';
     logQuery(query, []);
 
     const results = await db.query(query, { type: db.QueryTypes.SELECT });
