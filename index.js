@@ -68,22 +68,22 @@ app.get('/api/subjects/:sub_code', async (req, res, next) => {
 
   try {
     const subjectQuery = 'SELECT * FROM tb_subject WHERE sub_code = ?';
-    const filesQuery = 'SELECT * FROM tb_files WHERE sub_code = ?';
+    const docQuery = 'SELECT * FROM tb_doc WHERE sub_code = ?';
     const vdosQuery = 'SELECT * FROM tb_vdo WHERE sub_code = ?';
 
     logQuery(subjectQuery, [sub_code]);
-    logQuery(filesQuery, [sub_code]);
+    logQuery(docQuery, [sub_code]);
     logQuery(vdosQuery, [sub_code]);
 
     const [subjectResults, fileResults, vdoResults] = await Promise.all([
       db.query(subjectQuery, { replacements: [sub_code], type: db.QueryTypes.SELECT }),
-      db.query(filesQuery, { replacements: [sub_code], type: db.QueryTypes.SELECT }),
+      db.query(docQuery, { replacements: [sub_code], type: db.QueryTypes.SELECT }),
       db.query(vdosQuery, { replacements: [sub_code], type: db.QueryTypes.SELECT })
     ]);
 
     res.json({
       subject: subjectResults[0] || null,
-      files: fileResults,
+      doc: fileResults,
       vdos: vdoResults
     });
   } catch (err) {
@@ -277,9 +277,9 @@ app.delete('/api/vdos/:id', async (req, res) => {
 
 
 // API สำหรับการดึงเอกสารทั้งหมด
-app.get('/api/files', async (req, res) => {
+app.get('/api/doc', async (req, res) => {
   try {
-    const query = 'SELECT * FROM tb_files';
+    const query = 'SELECT * FROM tb_doc';
     logQuery(query, []);
 
     const results = await db.query(query, { type: db.QueryTypes.SELECT });
@@ -291,10 +291,10 @@ app.get('/api/files', async (req, res) => {
 });
 
 // API สำหรับการดึงเอกสารตาม sub_code
-app.get('/api/files-subject/:sub_code', async (req, res) => {
+app.get('/api/doc-subject/:sub_code', async (req, res) => {
   const { sub_code } = req.params;
 
-  const query = 'SELECT * FROM tb_files WHERE sub_code = ?';
+  const query = 'SELECT * FROM tb_doc WHERE sub_code = ?';
   logQuery(query, [sub_code]);
 
   try {
@@ -307,10 +307,10 @@ app.get('/api/files-subject/:sub_code', async (req, res) => {
 });
 
 // API สำหรับการดึงเอกสารตาม ID
-app.get('/api/files/:id', async (req, res) => {
+app.get('/api/doc/:id', async (req, res) => {
   const { id } = req.params;
 
-  const query = 'SELECT * FROM tb_files WHERE id = ?';
+  const query = 'SELECT * FROM tb_doc WHERE id = ?';
   logQuery(query, [id]);
 
   try {
@@ -323,10 +323,10 @@ app.get('/api/files/:id', async (req, res) => {
 });
 
 // API สำหรับการเพิ่มเอกสารใหม่
-app.post('/api/files', async (req, res) => {
+app.post('/api/doc', async (req, res) => {
   const { sub_code, file_name, file_link } = req.body;
 
-  const query = 'INSERT INTO tb_files (sub_code, file_name, file_link) VALUES (?, ?, ?)';
+  const query = 'INSERT INTO tb_doc (sub_code, file_name, file_link) VALUES (?, ?, ?)';
   logQuery(query, [sub_code, file_name, file_link]);
 
   try {
@@ -342,11 +342,11 @@ app.post('/api/files', async (req, res) => {
 });
 
 // API สำหรับการอัปเดตเอกสารตาม ID
-app.put('/api/files/:id', async (req, res) => {
+app.put('/api/doc/:id', async (req, res) => {
   const { id } = req.params;
   const { sub_code, file_name, file_link } = req.body;
 
-  const query = 'UPDATE tb_files SET sub_code = ?, file_name = ?, file_link = ? WHERE id = ?';
+  const query = 'UPDATE tb_doc SET sub_code = ?, file_name = ?, file_link = ? WHERE id = ?';
   logQuery(query, [sub_code, file_name, file_link, id]);
 
   try {
@@ -363,10 +363,10 @@ app.put('/api/files/:id', async (req, res) => {
 });
 
 // API สำหรับการลบเอกสารตาม ID
-app.delete('/api/files/:id', async (req, res) => {
+app.delete('/api/doc/:id', async (req, res) => {
   const { id } = req.params;
 
-  const query = 'DELETE FROM tb_files WHERE id = ?';
+  const query = 'DELETE FROM tb_doc WHERE id = ?';
   logQuery(query, [id]);
 
   try {
