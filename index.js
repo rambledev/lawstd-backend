@@ -294,7 +294,7 @@ app.get('/api/doc', async (req, res) => {
 app.get('/api/doc-subject/:sub_code', async (req, res) => {
   const { sub_code } = req.params;
 
-  const query = 'SELECT * FROM tb_doc WHERE sub_code = ?';
+  const query = 'SELECT * FROM tb_files WHERE sub_code = ?';
   logQuery(query, [sub_code]);
 
   try {
@@ -310,7 +310,7 @@ app.get('/api/doc-subject/:sub_code', async (req, res) => {
 app.get('/api/doc/:id', async (req, res) => {
   const { id } = req.params;
 
-  const query = 'SELECT * FROM tb_doc WHERE id = ?';
+  const query = 'SELECT * FROM tb_files WHERE id = ?';
   logQuery(query, [id]);
 
   try {
@@ -326,7 +326,7 @@ app.get('/api/doc/:id', async (req, res) => {
 app.post('/api/doc', async (req, res) => {
   const { sub_code, file_name, file_link } = req.body;
 
-  const query = 'INSERT INTO tb_doc (sub_code, file_name, file_link) VALUES (?, ?, ?)';
+  const query = 'INSERT INTO tb_files (sub_code, file_name, file_link) VALUES (?, ?, ?)';
   logQuery(query, [sub_code, file_name, file_link]);
 
   try {
@@ -346,7 +346,7 @@ app.put('/api/doc/:id', async (req, res) => {
   const { id } = req.params;
   const { sub_code, file_name, file_link } = req.body;
 
-  const query = 'UPDATE tb_doc SET sub_code = ?, file_name = ?, file_link = ? WHERE id = ?';
+  const query = 'UPDATE tb_files SET sub_code = ?, file_name = ?, file_link = ? WHERE id = ?';
   logQuery(query, [sub_code, file_name, file_link, id]);
 
   try {
@@ -366,7 +366,7 @@ app.put('/api/doc/:id', async (req, res) => {
 app.delete('/api/doc/:id', async (req, res) => {
   const { id } = req.params;
 
-  const query = 'DELETE FROM tb_doc WHERE id = ?';
+  const query = 'DELETE FROM tb_files WHERE id = ?';
   logQuery(query, [id]);
 
   try {
