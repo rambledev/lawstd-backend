@@ -275,6 +275,127 @@ app.delete('/api/vdos/:id', async (req, res) => {
   }
 });
 
+
+// API สำหรับการดึงเอกสารทั้งหมด
+app.get('/api/files', async (req, res) => {
+  try {
+    const query = 'SELECT * FROM tb_files';
+    logQuery(query, []);
+
+    const results = await db.query(query, { type: db.QueryTypes.SELECT });
+    res.json(results);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
+// API สำหรับการดึงเอกสารตาม sub_code
+app.get('/api/files-subject/:sub_code', async (req, res) => {
+  const { sub_code } = req.params;
+
+  const query = 'SELECT * FROM tb_files WHERE sub_code = ?';
+  logQuery(query, [sub_code]);
+
+  try {
+    const results = await db.query(query, { replacements: [sub_code], type: db.QueryTypes.SELECT });
+    res.json(results);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
+// API สำหรับการดึงเอกสารตาม ID
+app.get('/api/files/:id', async (req, res) => {
+  const { id } = req.params;
+
+  const query = 'SELECT * FROM tb_files WHERE id = ?';
+  logQuery(query, [id]);
+
+  try {
+    const results = await db.query(query, { replacements: [id], type: db.QueryTypes.SELECT });
+    res.json(results[0] || null);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
+// API สำหรับการเพิ่มเอกสารใหม่
+app.post('/api/files', async (req, res) => {
+  const { sub_code, file_name, file_link } = req.body;
+
+  const query = 'INSERT INTO tb_files (sub_code, file_name, file_link) VALUES (?, ?, ?)';
+  logQuery(query, [sub_code, file_name, file_link]);
+
+  try {
+    const result = await db.query(query, {
+      replacements: [sub_code, file_name, file_link],
+      type: db.QueryTypes.INSERT
+    });
+    res.status(201).json({ message: 'File added successfully!', id: result[0].insertId });
+  } catch (err) {
+    console.error("Error adding file:", err);
+    res.status(500).json({ error: 'Failed to add file' });
+  }
+});
+
+// API สำหรับการอัปเดตเอกสารตาม ID
+app.put('/api/files/:id', async (req, res) => {
+  const { id } = req.params;
+  const { sub_code, file_name, file_link } = req.body;
+
+  const query = 'UPDATE tb_files SET sub_code = ?, file_name = ?, file_link = ? WHERE id = ?';
+  logQuery(query, [sub_code, file_name, file_link, id]);
+
+  try {
+    const result = await db.query(query, { replacements: [sub_code, file_name, file_link, id] });
+
+    if (result[1].affectedRows === 0) {
+      return res.status(404).json({ message: 'File not found' });
+    }
+    res.json({ message: 'File updated successfully!' });
+  } catch (err) {
+    console.error("Error updating file:", err);
+    res.status(500).json({ error: 'Failed to update file' });
+  }
+});
+
+// API สำหรับการลบเอกสารตาม ID
+app.delete('/api/files/:id', async (req, res) => {
+  const { id } = req.params;
+
+  const query = 'DELETE FROM tb_files WHERE id = ?';
+  logQuery(query, [id]);
+
+  try {
+    const result = await db.query(query, { replacements: [id] });
+
+    if (result[1].affectedRows === 0) {
+      return res.status(404).json({ message: 'File not found' });
+    }
+    res.json({ message: 'File deleted successfully!' });
+  } catch (err) {
+    console.error("Error deleting file:", err);
+    res.status(500).json({ error: 'Failed to delete file' });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 app.listen(port, () => {
   console.log(`++++++++++++++++++++++++++ app listening at port:${port}`);
 });
