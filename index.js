@@ -17,7 +17,7 @@ const logQuery = (query, replacements) => {
 
 // cors
 app.use(cors({
-    origin: ['http://localhost:5173','https://lawstd.rmu.ac.th/'],
+    origin: ['http://localhost:5173','http://localhost:3000','https://lawstd.rmu.ac.th/'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // กำหนดวิธีการที่อนุญาต
     credentials: true // อนุญาตให้ส่ง Cookies
 }));
