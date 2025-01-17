@@ -68,7 +68,7 @@ app.get('/api/subjects/:sub_code', async (req, res, next) => {
 
   try {
     const subjectQuery = 'SELECT * FROM tb_subject WHERE sub_code = ?';
-    const docQuery = 'SELECT * FROM tb_doc WHERE sub_code = ?';
+    const docQuery = 'SELECT * FROM tb_files WHERE sub_code = ?';
     const vdosQuery = 'SELECT * FROM tb_vdo WHERE sub_code = ?';
 
     logQuery(subjectQuery, [sub_code]);
