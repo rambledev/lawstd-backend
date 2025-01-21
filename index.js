@@ -1,12 +1,25 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
+const cors = require('cors'); // เพิ่มการใช้งาน CORS
 const db = require('./db'); // Assume you have a db connection module
 const { QueryTypes } = require('sequelize');
 
 const app = express();
+
+// Middleware
 app.use(express.json());
 app.use(cookieParser());
+
+// ตั้งค่า CORS สำหรับ Production
+const corsOptions = {
+  origin:  [
+    'http://localhost:5173', // Frontend development
+    'https://lawstd.rmu.ac.th', // Frontend production
+  ], // URL ของ frontend ใน production
+  credentials: true, // อนุญาตการส่ง cookie
+};
+app.use(cors(corsOptions));
 
 // Helper function to create error objects
 function createError(status, message) {
@@ -60,8 +73,8 @@ app.post('/api/login-admin', async (req, res, next) => {
     }
 
     const cookieOptions = {
-      sameSite: 'None',
-      secure: true,
+      sameSite: 'None', // รองรับการทำงานข้ามโดเมน
+      secure: true, // บังคับให้ใช้ HTTPS
     };
     res.cookie('adminId', admin.id, cookieOptions);
 
