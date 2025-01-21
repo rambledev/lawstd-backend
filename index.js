@@ -22,7 +22,33 @@ app.use(cors({
     credentials: true // อนุญาตให้ส่ง Cookies
 }));
 
-console.log("xxxxxxxxxx-2- cors origin = *");
+
+const corsOptions = {
+  origin: (origin, callback) => {
+      console.log('Checking Origin:', origin);
+      const allowedOrigins = ['http://localhost:5173', 'http://localhost:3000', 'https://lawstd.rmu.ac.th/'];
+      if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true);
+      } else {
+          console.log('Rejected Origin:', origin);
+          callback(new Error('Not allowed by CORS'));
+      }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+};
+app.use(cors(corsOptions));
+
+
+
+console.log("xxxxx to do xxxxx add check origin");
+
+app.use((req, res, next) => {
+  console.log("Request Origin:", req.headers.origin);
+  next();
+});
+
+
 
 // API สำหรับล็อกอินผู้ดูแลระบบ
 app.post('/api/login-admin', async (req, res, next) => {
