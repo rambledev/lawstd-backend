@@ -6,6 +6,33 @@ const db = require('./db'); // Assume you have a db connection module
 const { QueryTypes } = require('sequelize');
 
 const app = express();
+<<<<<<< HEAD
+=======
+const port = 3000;
+
+// Middleware เพื่อ parse request body
+app.use(bodyParser.json());
+
+// ฟังก์ชันเพื่อแสดงคำสั่ง SQL ใน console
+const logQuery = (query, replacements) => {
+  console.log("Executing query:", query, "with parameters:", replacements);
+};
+
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "https://your-frontend-domain.com"); // ระบุ Frontend Domain
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  next();
+});
+
+// cors
+app.use(cors({
+    origin: ['http://localhost:5173','http://localhost:3000','https://lawstd.rmu.ac.th/'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // กำหนดวิธีการที่อนุญาต
+    credentials: true // อนุญาตให้ส่ง Cookies
+}));
+>>>>>>> 0a0d34b (update index)
 
 // Middleware
 app.use(express.json());
@@ -33,6 +60,7 @@ function logQuery(query, replacements) {
   console.log('Executing Query:', query, 'with replacements:', replacements);
 }
 
+<<<<<<< HEAD
 // Middleware for error handling
 app.use((err, req, res, next) => {
   console.error('Unhandled Error:', err.message);
@@ -42,6 +70,14 @@ app.use((err, req, res, next) => {
       stack: process.env.NODE_ENV === 'production' ? null : err.stack, // Hide stack trace in production
     },
   });
+=======
+
+console.log("xxxxx to do xxxxx add check origin");
+
+app.use((req, res, next) => {
+  console.log("Request Origin:", req.headers.origin);
+  next();
+>>>>>>> 0a0d34b (update index)
 });
 
 // API for admin login
