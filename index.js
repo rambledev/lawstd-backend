@@ -25,7 +25,11 @@ const corsOptions = {
   ], // URL ของ frontend ใน production
   credentials: true, // อนุญาตการส่ง cookie
 };
-app.use(cors(corsOptions));
+app.use(cors({
+  origin: ['http://localhost:5173', 'https://lawstd.rmu.ac.th'], // เพิ่มโดเมนที่อนุญาต
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true, // รองรับการส่ง cookies
+}));
 
 // Middleware
 app.use(express.json());
