@@ -112,6 +112,7 @@ const getDocumentsBySubjectCode = async (req, res, next) => {
       JOIN tb_subject ON tb_files.sub_code = tb_subject.sub_code
       WHERE tb_files.sub_code = ?
     `;
+    console.log("Subject code received:", subjectCode);
     const documents = await db.query(query, {
       replacements: [subjectCode],
       type: QueryTypes.SELECT,

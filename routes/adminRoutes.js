@@ -3,7 +3,12 @@ const adminController = require('../controllers/adminController');
 
 const router = express.Router();
 
-// ตรวจสอบว่า route นี้ถูกตั้งค่า
+// Route สำหรับล็อกอิน
 router.post('/login', adminController.loginAdmin);
+
+// Route สำหรับตั้งค่ารหัสผ่านใหม่ของ admin
+router.post('/reset-password', adminController.resetAdminPassword);
+
+
 
 module.exports = router;
