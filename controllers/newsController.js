@@ -3,6 +3,7 @@ const { QueryTypes } = require('sequelize');
 const createError = require('../middlewares/errorHandler').createError;
 const multer = require('multer');
 const path = require('path');
+const sharp = require('sharp');
 
 // ตั้งค่า multer สำหรับอัปโหลดไฟล์
 const storage = multer.diskStorage({
@@ -15,6 +16,29 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
+
+// ฟังก์ชันสำหรับปรับขนาดภาพและสร้าง thumbnail
+const uploadImages = async (files) => {
+  const imagePaths = [];
+
+  for (let i = 0; i < files.length; i++) {
+    if (files[i]) {
+      const filePath = path.join('uploads', files[i].filename);
+      const thumbnailPath = path.join('uploads', `thumb-${files[i].filename}`);
+
+      // ใช้ sharp เพื่อสร้าง thumbnail
+      await sharp(filePath)
+        .resize(150, 150) // ปรับขนาดเป็น 150x150 px
+        .toFile(thumbnailPath);
+
+      imagePaths.push(files[i].filename);
+    } else {
+      imagePaths.push(null);
+    }
+  }
+
+  return imagePaths;
+};
 
 // ดึงข่าวสารทั้งหมด
 const getAllNews = async (req, res, next) => {
@@ -54,18 +78,14 @@ const addNews = async (req, res, next) => {
   const files = req.files || {};
 
   try {
-    const img1 = files.img1 ? files.img1[0].filename : null;
-    const img2 = files.img2 ? files.img2[0].filename : null;
-    const img3 = files.img3 ? files.img3[0].filename : null;
-    const img4 = files.img4 ? files.img4[0].filename : null;
-    const img5 = files.img5 ? files.img5[0].filename : null;
+    const images = await uploadImages([files.img1, files.img2, files.img3, files.img4, files.img5]);
 
     const query = `
       INSERT INTO tb_news (topic, detail, img1, img2, img3, img4, img5, author)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `;
     const result = await db.query(query, {
-      replacements: [topic, detail, img1, img2, img3, img4, img5, author],
+      replacements: [topic, detail, images[0], images[1], images[2], images[3], images[4], author],
       type: QueryTypes.INSERT,
     });
 
@@ -82,9 +102,11 @@ const updateNews = async (req, res, next) => {
   const files = req.files || {};
 
   try {
-    let imagePath = null;
+    const images = [];
+
+    // ดาวน์เกรดการจัดการภาพ
     if (files.img1) {
-      imagePath = files.img1[0].filename;
+      images[0] = await uploadImages([files.img1])[0];
     }
 
     const query = `
@@ -93,7 +115,7 @@ const updateNews = async (req, res, next) => {
       WHERE id = ?
     `;
     const result = await db.query(query, {
-      replacements: [topic, detail, author, imagePath, id],
+      replacements: [topic, detail, author, images[0] || null, id],
       type: QueryTypes.UPDATE,
     });
 

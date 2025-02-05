@@ -14,13 +14,15 @@ const subjectRoutes = require('./routes/subjectRoutes');
 const docRoutes = require('./routes/docRoutes');
 const vdoRoutes = require('./routes/vdoRoutes');
 const newsRoutes = require('./routes/newsRoutes');
+const linksRoutes = require('./routes/linksRouter');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  origin: ['https://lawstd.rmu.ac.th', 'http://localhost:5173/'],
+  // origin: ['https://lawstd.rmu.ac.th', 'http://localhost:5173/'],
+  origin: ['*'],
   methods: ['POST', 'GET', 'OPTIONS', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Accept'],
   credentials: true, // อนุญาตให้ใช้ cookie
@@ -45,6 +47,7 @@ app.use('/api/subjects', subjectRoutes);
 app.use('/api/docs', docRoutes);
 app.use('/api/vdos', vdoRoutes);
 app.use('/api/news', newsRoutes);
+app.use('/api/links', linksRoutes);
 
 // Error Handling Middleware
 app.use(errorHandler);
