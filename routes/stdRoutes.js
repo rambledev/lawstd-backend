@@ -8,6 +8,6 @@ router.get('/', stdController.getAllStudents); // ดึงข้อมูลน
 router.get('/:id', stdController.getStudentById); // ดึงข้อมูลนักศึกษาตาม ID
 router.put('/:id', stdController.updateStudent); // อัปเดตข้อมูลนักศึกษา
 router.delete('/:id', stdController.deleteStudent); // ลบข้อมูลนักศึกษา
-router.get('/:sub_code', stdController.getStudentBySubCode); // ดึงข้อมูลนักศึกษาตาม ID
+router.get('/subcode/:sub_code', stdController.getStudentBySubCode);  // ดึงข้อมูลนักศึกษาตาม ID
 
 module.exports = router;
