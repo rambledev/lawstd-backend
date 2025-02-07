@@ -32,7 +32,7 @@ const getAllStudents = async (req, res, next) => {
 
 // ดึงข้อมูลนักศึกษาโดย รหัสวิชา
 const getStudentBySubCode = async (req, res, next) => {
-    const { id } = req.params;
+    const { sub_code } = req.params;
   
     try {
       const query = 'SELECT * FROM tb_subject_list WHERE sub_code = ?';
