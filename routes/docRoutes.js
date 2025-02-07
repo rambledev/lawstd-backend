@@ -8,7 +8,7 @@ router.get('/', docController.getAllDocuments);
 router.get('/:id', docController.getDocumentById);
 router.put('/:id', docController.updateDocument);
 router.delete('/:id', docController.deleteDocument);
-router.get('/doc-subject/:subjectCode', docController.getDocumentsBySubjectCode);
+router.get('/doc-subject/:sub_code', docController.getDocumentsBySubjectCode);
 
 
 module.exports = router;
