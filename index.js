@@ -15,6 +15,7 @@ const docRoutes = require('./routes/docRoutes');
 const vdoRoutes = require('./routes/vdoRoutes');
 const newsRoutes = require('./routes/newsRoutes');
 const linksRoutes = require('./routes/linksRouter');
+const stdRouters = require('./routes/stdRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -47,6 +48,7 @@ app.use('/api/docs', docRoutes);
 app.use('/api/vdos', vdoRoutes);
 app.use('/api/news', newsRoutes);
 app.use('/api/links', linksRoutes);
+app.use('/api/students', stdRouters);
 
 // Error Handling Middleware
 app.use(errorHandler);
