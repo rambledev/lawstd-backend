@@ -113,4 +113,5 @@ module.exports = {
   getStudentById,
   updateStudent,
   deleteStudent,
+  getStudentBySubCode,
 };
