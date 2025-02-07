@@ -30,23 +30,24 @@ const getAllStudents = async (req, res, next) => {
   }
 };
 
+
 // ดึงข้อมูลนักศึกษาโดย รหัสวิชา
 const getStudentBySubCode = async (req, res, next) => {
     const { sub_code } = req.params;
-  
+
     try {
-      const query = 'SELECT * FROM tb_subject_list WHERE sub_code = ?';
-      const result = await db.query(query, { replacements: [id], type: QueryTypes.SELECT });
-      
-      if (!result.length) {
-        throw createError(404, 'Student not found');
-      }
-  
-      res.json(result[0]);
+        const query = 'SELECT * FROM tb_student WHERE sub_code = ?'; // ตรวจสอบตารางที่ถูกต้อง
+        const result = await db.query(query, { replacements: [sub_code], type: QueryTypes.SELECT }); // ใช้ sub_code ที่ส่งมา
+
+        if (!result.length) {
+            throw createError(404, 'Students not found'); // เปลี่ยนข้อความให้เหมาะสม
+        }
+
+        res.json(result); // ให้ส่งผลลัพธ์ทั้งหมด
     } catch (err) {
-      next(err);
+        next(err); // ส่งต่อข้อผิดพลาด
     }
-  };
+};
 
 // ดึงข้อมูลนักศึกษาโดย ID
 const getStudentById = async (req, res, next) => {
