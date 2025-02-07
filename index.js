@@ -21,8 +21,8 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  // origin: ['https://lawstd.rmu.ac.th', 'http://localhost:5173/'],
-  origin: ['*'],
+  origin: ['https://lawstd.rmu.ac.th', 'http://localhost:5173/'],
+  //origin: ['*'],
   methods: ['POST', 'GET', 'OPTIONS', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Accept'],
   credentials: true, // อนุญาตให้ใช้ cookie
