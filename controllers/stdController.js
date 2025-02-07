@@ -30,6 +30,24 @@ const getAllStudents = async (req, res, next) => {
   }
 };
 
+// ดึงข้อมูลนักศึกษาโดย รหัสวิชา
+const getStudentBySubCode = async (req, res, next) => {
+    const { id } = req.params;
+  
+    try {
+      const query = 'SELECT * FROM tb_subject_list WHERE sub_code = ?';
+      const result = await db.query(query, { replacements: [id], type: QueryTypes.SELECT });
+      
+      if (!result.length) {
+        throw createError(404, 'Student not found');
+      }
+  
+      res.json(result[0]);
+    } catch (err) {
+      next(err);
+    }
+  };
+
 // ดึงข้อมูลนักศึกษาโดย ID
 const getStudentById = async (req, res, next) => {
   const { id } = req.params;
