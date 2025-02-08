@@ -1,71 +1,113 @@
 // controllers/linksController.js
-const db = require('../db'); // โหลดการเชื่อมต่อฐานข้อมูล
+const db = require('../db'); 
+const { QueryTypes } = require('sequelize'); 
 
-// หา links ทั้งหมด
+// ดึงข้อมูลทั้งหมดจาก tb_links
 exports.getLinks = async (req, res) => {
     try {
-        const results = await db.query('SELECT * FROM tb_links');
+        const results = await db.query('SELECT * FROM tb_links ORDER BY level ASC', {
+            type: QueryTypes.SELECT
+        });
+
         res.json(results);
     } catch (error) {
+        console.error('Error fetching links:', error);
         res.status(500).json({ message: 'Server error', error });
     }
 };
 
 // เพิ่ม link ใหม่
 exports.addLink = async (req, res) => {
-    const { name, level, parent_id } = req.body;
+    const { name, link_url, level, parent_id } = req.body;
 
-    console.log(req.body)
-    // ตรวจสอบค่าที่ส่งมาและแสดงค่าที่จะส่งไปยัง SQL
     if (!name || typeof name !== 'string') {
         return res.status(400).json({ message: "Invalid 'name' value" });
+    }
+    if (!link_url || typeof link_url !== 'string') {
+        return res.status(400).json({ message: "Invalid 'link_url' value" });
     }
     if (typeof level !== 'number') {
         return res.status(400).json({ message: "Invalid 'level' value" });
     }
 
-    // ตั้งค่า default สำหรับ parent_id
     const parentIdValue = parent_id !== undefined ? parent_id : null;
-
-    console.log(`Inserting into db: name=${name}, level=${level}, parent_id=${parentIdValue}`); // debug line
 
     try {
         const result = await db.query(
-            'INSERT INTO tb_links (name, level, parent_id) VALUES (?, ?, ?)', 
-            [name, level, parentIdValue]
+            'INSERT INTO tb_links (name, link_url, level, parent_id) VALUES (?, ?, ?, ?)',
+            {
+                replacements: [name, link_url, level, parentIdValue],
+                type: QueryTypes.INSERT
+            }
         );
 
         res.status(201).json({
-            id: result.insertId,
+            id: result[0], 
             name,
+            link_url,
             level,
             parent_id: parentIdValue
         });
     } catch (error) {
+        console.error('Error adding link:', error);
         res.status(500).json({ message: 'Server error', error });
     }
 };
 
-
 // อัปเดต link
 exports.updateLink = async (req, res) => {
-    const { id } = req.params; // รับ id จาก URL
-    const { name, level, parent_id } = req.body;
+    const { id } = req.params;
+    const { name, link_url, level, parent_id } = req.body;
+
+    console.log("Request Body:", req.body); // Log ข้อมูลที่ได้รับจากคำขอ
+
+    if (!name || !link_url || level === undefined || id === undefined) {
+        return res.status(400).json({ message: "Invalid input, please provide name, link_url, level, and id." });
+    }
+
+    console.log(`Updating link with id: ${id}, name: ${name}, link_url: ${link_url}, level: ${level}, parent_id: ${parent_id}`);
+
     try {
-        await db.query('UPDATE tb_links SET name = ?, level = ?, parent_id = ? WHERE id = ?', [name, level, parent_id, id]);
+        const query = `UPDATE tb_links SET name = ?, link_url = ?, level = ?, parent_id = ? WHERE id = ?`;
+        const values = [name, link_url, level, parent_id || null, id];
+
+        console.log("Executing query:", query, "with values:", values); // Log คำสั่ง SQL และค่าที่ส่ง
+
+        const result = await db.query(query, {
+            replacements: values,
+            type: QueryTypes.UPDATE
+        });
+
+        console.log("Query Result:", result); // Log ผลลัพธ์ที่ได้รับจากการดำเนินการ SQL
+
+        if (result[1] === 0) {
+            return res.status(404).json({ message: 'Link not found' });
+        }
+
         res.json({ message: 'Link updated successfully' });
     } catch (error) {
+        console.error('Error updating link:', error);
         res.status(500).json({ message: 'Server error', error });
     }
 };
 
 // ลบ link
 exports.deleteLink = async (req, res) => {
-    const { id } = req.params; // รับ id จาก URL
+    const { id } = req.params;
+
     try {
-        await db.query('DELETE FROM tb_links WHERE id = ?', [id]);
+        const result = await db.query('DELETE FROM tb_links WHERE id = ?', {
+            replacements: [id],
+            type: QueryTypes.DELETE
+        });
+
+        if (result[1] === 0) {
+            return res.status(404).json({ message: 'Link not found' });
+        }
+
         res.json({ message: 'Link deleted successfully' });
     } catch (error) {
+        console.error('Error deleting link:', error);
         res.status(500).json({ message: 'Server error', error });
     }
 };
