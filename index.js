@@ -28,7 +28,6 @@ app.use(cors({
   credentials: true,
 }));
 
-
 app.use(helmet());
 app.use(cookieParser());
 app.use(bodyParser.json());
@@ -36,8 +35,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Rate Limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 นาที
-  max: 100, // จำกัด 100 requests ต่อ IP
+  windowMs: 15 * 60 * 1000, 
+  max: 100, 
 });
 app.use(limiter);
 

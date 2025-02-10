@@ -1,6 +1,6 @@
 const db = require('../config/db');
 const { QueryTypes } = require('sequelize');
-const createError = require('../middlewares/errorHandler').createError;
+const createError = require('http-errors');
 const multer = require('multer');
 const path = require('path');
 const sharp = require('sharp');
@@ -23,6 +23,10 @@ const uploadImages = async (files) => {
 
   for (let i = 0; i < files.length; i++) {
     if (files[i]) {
+      if (!files[i].filename) {
+        throw createError(400, `File ${i + 1} does not have a valid filename`);
+      }
+
       const filePath = path.join('uploads', files[i].filename);
       const thumbnailPath = path.join('uploads', `thumb-${files[i].filename}`);
 
@@ -75,25 +79,60 @@ const getNewsById = async (req, res, next) => {
 // เพิ่มข่าวสารใหม่
 const addNews = async (req, res, next) => {
   const { topic, detail, author } = req.body;
-  const files = req.files || {};
+  const files = req.files || {}; 
 
   try {
-    const images = await uploadImages([files.img1, files.img2, files.img3, files.img4, files.img5]);
+    // ลูปเช็คไฟล์ img1 - img5 และตั้งค่าเป็น null หากไม่มีการอัปโหลดไฟล์
+    const imageNames = ['img1', 'img2', 'img3', 'img4', 'img5'];
+    imageNames.forEach((img) => {
+      if (!files[img]) {
+        files[img] = null;
+      }
+    });
 
+    // สร้างอาร์เรย์ของ path และชื่อไฟล์สำหรับแต่ละไฟล์
+    const images = imageNames.map((img) => ({
+      path: files[img]?.path ?? null,
+      filename: files[img]?.filename ?? null,
+    }));
+
+    // เพิ่ม log เพื่อตรวจสอบชื่อไฟล์ที่ถูกอัปโหลด
+    console.log('Uploaded file names:', images.map(image => image.filename));
+
+    // ปรับคำสั่ง SQL เพื่อรวมชื่อไฟล์ลงในฐานข้อมูล
     const query = `
-      INSERT INTO tb_news (topic, detail, img1, img2, img3, img4, img5, author)
+      INSERT INTO tb_news (topic, detail, author, img1, img2, img3, img4, img5)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `;
     const result = await db.query(query, {
-      replacements: [topic, detail, images[0], images[1], images[2], images[3], images[4], author],
+      replacements: [
+        topic, 
+        detail, 
+        author, 
+        images[0].filename, 
+        images[1].filename, 
+        images[2].filename, 
+        images[3].filename, 
+        images[4].filename
+      ],
       type: QueryTypes.INSERT,
     });
 
-    res.status(201).json({ message: 'News created successfully', id: result[0] });
+    // ตรวจสอบผลลัพธ์และส่ง response
+    if (result[0]) {
+      res.status(201).json({ message: 'News created successfully', id: result[0] });
+    } else {
+      throw createError(500, 'Failed to create news');
+    }
   } catch (err) {
-    next(err);
+    console.error('Error adding news:', err);
+    next(err); 
   }
 };
+
+
+
+
 
 // อัปเดตข่าวสาร
 const updateNews = async (req, res, next) => {
@@ -104,7 +143,7 @@ const updateNews = async (req, res, next) => {
   try {
     const images = [];
 
-    // ดาวน์เกรดการจัดการภาพ
+    // ตรวจสอบว่ามีไฟล์ img1
     if (files.img1) {
       images[0] = await uploadImages([files.img1])[0];
     }
@@ -140,7 +179,8 @@ const deleteNews = async (req, res, next) => {
       type: QueryTypes.DELETE,
     });
 
-    if (result[0] === 0) {
+    // ตรวจสอบผลลัพธ์
+    if (result && result.affectedRows === 0) {
       throw createError(404, 'News not found');
     }
 

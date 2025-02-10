@@ -10,9 +10,6 @@ const sequelize = new Sequelize(
     port: process.env.DB_PORT, // พอร์ตของฐานข้อมูล
     dialect: 'mysql', // ใช้ 'mysql' เป็น dialect
     dialectModule: require('mysql2'), // ใช้ mysql2 เป็น dialect module
-    dialectOptions: {
-      allowPublicKeyRetrieval: true, // อนุญาตให้ดึง RSA public key
-    },
     pool: {
       max: 10, // จำนวน connection สูงสุด
       min: 0, // จำนวน connection ต่ำสุด
