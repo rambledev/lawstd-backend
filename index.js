@@ -22,7 +22,7 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://lawstd-api.rmu.ac.th'],
+  origin: ['http://localhost:3000','http://localhost:5173', 'https://lawstd-api.rmu.ac.th'],
   methods: ['POST', 'GET', 'OPTIONS', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Accept'],
   credentials: true,
