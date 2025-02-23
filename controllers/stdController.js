@@ -2,6 +2,36 @@ const db = require('../config/db');
 const { QueryTypes } = require('sequelize');
 const createError = require('../middlewares/errorHandler').createError;
 
+// เพิ่ม นศ. เข้าวิชา
+const addStudentToSubject = async (req, res) => {
+  try {
+    const { sub_code, std_code, std_name, status } = req.body;
+
+    // ตรวจสอบข้อมูลที่รับมาว่าถูกต้องหรือไม่
+    if (!sub_code || !std_code || !std_name) {
+      return res.status(400).json({ message: 'ข้อมูลไม่ครบถ้วน' });
+    }
+
+    // เพิ่มข้อมูล student ใน subject list โดยใช้ db.query
+    const query = `
+      INSERT INTO tb_subject_list (sub_code, std_code, std_name, status)
+      VALUES (?, ?, ?, ?)
+    `;
+    const result = await db.query(query, {
+      replacements: [sub_code, std_code, std_name, status],
+      type: QueryTypes.INSERT
+    });
+
+    res.status(200).json({ message: 'เพิ่มนักเรียนในรายวิชาเรียบร้อยแล้ว' });
+  } catch (error) {
+    console.error('Error adding student:', error);
+    res.status(500).json({ message: 'เกิดข้อผิดพลาดในการเพิ่มนักเรียน' });
+  }
+};
+
+
+
+
 // เพิ่มนักศึกษาใหม่
 const addStudent = async (req, res, next) => {
   const { std_code, std_name, email, password, std_school, faculty, status } = req.body;
@@ -33,20 +63,31 @@ const getAllStudents = async (req, res, next) => {
 
 // ดึงข้อมูลนักศึกษาโดย รหัสวิชา
 const getStudentBySubCode = async (req, res, next) => {
-    const { sub_code } = req.params;
+  const { sub_code } = req.params;
 
-    try {
-        const query = 'SELECT * FROM tb_student WHERE sub_code = ?'; // ตรวจสอบตารางที่ถูกต้อง
-        const result = await db.query(query, { replacements: [sub_code], type: QueryTypes.SELECT }); // ใช้ sub_code ที่ส่งมา
+  try {
+      // ดึงข้อมูลจาก tb_subject_list โดยใช้ sub_code
+      const query = `
+          SELECT s.*, st.std_name AS student_name, st.std_code AS std_code
+          FROM tb_subject_list s
+          JOIN tb_student st ON s.std_code = st.std_code
+          WHERE s.sub_code = ?`;
 
-        if (!result.length) {
-            throw createError(404, 'Students not found'); // เปลี่ยนข้อความให้เหมาะสม
-        }
+      const result = await db.query(query, {
+          replacements: [sub_code],
+          type: QueryTypes.SELECT
+      });
 
-        res.json(result); // ให้ส่งผลลัพธ์ทั้งหมด
-    } catch (err) {
-        next(err); // ส่งต่อข้อผิดพลาด
-    }
+      // หากไม่พบข้อมูล
+      if (!result.length) {
+          return res.status(404).json({ message: 'ไม่พบข้อมูลนักศึกษาสำหรับรหัสวิชานี้' });
+      }
+
+      // ส่งข้อมูลนักศึกษาในรูปแบบ JSON
+      res.json(result);
+  } catch (err) {
+      next(err); // ส่งต่อข้อผิดพลาดให้กับ middleware ถัดไป
+  }
 };
 
 // ดึงข้อมูลนักศึกษาโดย ID
@@ -90,6 +131,32 @@ const updateStudent = async (req, res, next) => {
   }
 };
 
+// ลบรายชื่อนักศึกษา
+const deleteStudentList = async (req, res, next) => {
+  const { id } = req.params;  // รับรหัสนักศึกษา
+  const { sub_code } = req.query;  // รับรหัสวิชาจาก query string
+
+  if (!sub_code) {
+    return res.status(400).json({ message: 'Subject code is required' });  // ถ้าไม่มีรหัสวิชาให้แจ้งข้อผิดพลาด
+  }
+
+  try {
+    const query = 'DELETE FROM tb_subject_list WHERE std_code = ? AND sub_code = ?';
+    const result = await db.query(query, { replacements: [id, sub_code], type: QueryTypes.DELETE });
+
+    // ตรวจสอบว่ามีการลบข้อมูลหรือไม่
+    if (result === 0) {  // result จะเป็นจำนวนแถวที่ถูกลบ
+      throw createError(404, 'Student or subject not found');
+    }
+
+    res.json({ message: 'Student deleted successfully from subject' });
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+
 // ลบข้อมูลนักศึกษา
 const deleteStudent = async (req, res, next) => {
   const { id } = req.params;
@@ -108,6 +175,39 @@ const deleteStudent = async (req, res, next) => {
   }
 };
 
+const searchStudents = async (req, res) => {
+  console.log("Query Params:", req.query); // ✅ Debug
+  const { keyword } = req.query;
+
+  if (!keyword) {
+      return res.status(400).json({ message: "Keyword is required" });
+  }
+
+  try {
+      const query = `
+          SELECT * FROM tb_student 
+          WHERE std_code LIKE :keyword OR std_name LIKE :keyword
+      `;
+      const students = await db.query(query, {
+          replacements: { keyword: `%${keyword}%` }, // ✅ ใช้ `%keyword%`
+          type: QueryTypes.SELECT
+      });
+
+      if (students.length === 0) {
+          return res.status(404).json({ message: "No students found" });
+      }
+
+      res.json(students);
+  } catch (err) {
+      console.error("Database error:", err);
+      res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+
+
+
+
 module.exports = {
   addStudent,
   getAllStudents,
@@ -115,4 +215,7 @@ module.exports = {
   updateStudent,
   deleteStudent,
   getStudentBySubCode,
+  searchStudents,
+  addStudentToSubject,
+  deleteStudentList
 };

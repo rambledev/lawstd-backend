@@ -6,7 +6,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const path = require('path');
 const db = require('./config/db');
-const errorHandler = require('./middlewares/errorHandler');
+const { errorHandler } = require('./middlewares/errorHandler');
 
 // Routes
 const adminRoutes = require('./routes/adminRoutes');
@@ -16,6 +16,8 @@ const vdoRoutes = require('./routes/vdoRoutes');
 const newsRoutes = require('./routes/newsRoutes');
 const linksRoutes = require('./routes/linksRouter');
 const stdRouters = require('./routes/stdRoutes');
+const statRouters = require('./routes/statRoutes');
+const dashRouters = require('./routes/dashboardRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -31,8 +33,8 @@ app.use(cors({
 app.use(helmet());
 app.use(cookieParser());
 app.use(bodyParser.json());
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 // Rate Limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, 
@@ -48,6 +50,8 @@ app.use('/api/vdos', vdoRoutes);
 app.use('/api/news', newsRoutes);
 app.use('/api/links', linksRoutes);
 app.use('/api/students', stdRouters);
+app.use('/api/stat', statRouters);
+app.use('/api/dash', dashRouters);
 
 // Error Handling Middleware
 app.use(errorHandler);

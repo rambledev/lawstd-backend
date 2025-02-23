@@ -3,11 +3,17 @@ const stdController = require('../controllers/stdController');
 
 const router = express.Router();
 
-router.post('/', stdController.addStudent); // เพิ่มนักศึกษาใหม่
-router.get('/', stdController.getAllStudents); // ดึงข้อมูลนักศึกษา
-router.get('/:id', stdController.getStudentById); // ดึงข้อมูลนักศึกษาตาม ID
-router.put('/:id', stdController.updateStudent); // อัปเดตข้อมูลนักศึกษา
-router.delete('/:id', stdController.deleteStudent); // ลบข้อมูลนักศึกษา
-router.get('/subcode/:sub_code', stdController.getStudentBySubCode);  // ดึงข้อมูลนักศึกษาตาม ID
+router.get('/search', stdController.searchStudents); // ✅ เปลี่ยนเป็น Query String
+router.get('/std_list/:sub_code', stdController.getStudentBySubCode); // ✅ ควรอยู่ก่อน `:id`
+router.get('/:id', stdController.getStudentById); // ✅ ต้องอยู่หลังสุด เพื่อไม่ชน `/search`
+
+router.post('/', stdController.addStudent);
+router.get('/', stdController.getAllStudents);
+router.put('/:id', stdController.updateStudent);
+router.delete('/:id', stdController.deleteStudent);
+
+router.delete('/students-list/:id', stdController.deleteStudentList);
+
+router.post('/subject-list', stdController.addStudentToSubject);
 
 module.exports = router;

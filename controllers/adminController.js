@@ -16,12 +16,13 @@ const resetAdminPassword = async (req, res) => {
     const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
 
     const query = 'UPDATE tb_user SET password = ? WHERE username = ?';
-    const [result] = await db.query(query, {
+    const result = await db.query(query, {
       replacements: [hashedPassword, username],
       type: QueryTypes.UPDATE,
     });
 
-    if (result.affectedRows === 0) {
+    // ตรวจสอบค่าที่ส่งกลับ
+    if (result[0] && result[0].affectedRows === 0) {
       return res.status(404).json({ message: 'Admin user not found' });
     }
 
@@ -48,18 +49,18 @@ const loginAdmin = async (req, res) => {
     });
 
     if (results.length === 0) {
-      return res.status(401).json({ message: 'Invalid username or password' });
+      return res.status(401).json({ message: 'Invalid username' });
     }
 
     const admin = results[0];
     const isMatch = await bcrypt.compare(password, admin.password);
 
     if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid username or password' });
+      return res.status(401).json({ message: 'Invalid  password' });
     }
 
     res.cookie('adminId', admin.id, { sameSite: 'None', secure: true });
-    res.json({ message: 'Login successful', adminId: admin.id });
+    res.json({ message: 'Login successful', profile: results });
   } catch (err) {
     console.error('Login Error:', err.message);
     res.status(500).json({ message: 'Internal Server Error' });

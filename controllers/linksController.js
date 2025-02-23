@@ -1,11 +1,11 @@
 // controllers/linksController.js
-const db = require('../db'); 
+const db = require('../config/db.js'); 
 const { QueryTypes } = require('sequelize'); 
 
 // ดึงข้อมูลทั้งหมดจาก tb_links
 exports.getLinks = async (req, res) => {
     try {
-        const results = await db.query('SELECT * FROM tb_links ORDER BY level ASC', {
+        const results = await db.query('SELECT * FROM tb_links ORDER BY id ASC', {
             type: QueryTypes.SELECT
         });
 
@@ -18,35 +18,39 @@ exports.getLinks = async (req, res) => {
 
 // เพิ่ม link ใหม่
 exports.addLink = async (req, res) => {
-    const { name, link_url, level, parent_id } = req.body;
+    const {
+        name = null,           // กำหนดค่าเริ่มต้นเป็น null
+        link_url = null,      // กำหนดค่าเริ่มต้นเป็น null
+        level = null,         // กำหนดค่าเริ่มต้นเป็น null
+        parent_id = null      // กำหนดค่าเริ่มต้นเป็น null
+    } = req.body;
 
-    if (!name || typeof name !== 'string') {
-        return res.status(400).json({ message: "Invalid 'name' value" });
-    }
-    if (!link_url || typeof link_url !== 'string') {
-        return res.status(400).json({ message: "Invalid 'link_url' value" });
-    }
-    if (typeof level !== 'number') {
-        return res.status(400).json({ message: "Invalid 'level' value" });
-    }
-
-    const parentIdValue = parent_id !== undefined ? parent_id : null;
+    // ตรวจสอบค่า name และ link_url ว่าต้องไม่เป็น null
+    // if (!name || typeof name !== 'string') {
+    //     return res.status(400).json({ message: "Invalid 'name' value" });
+    // }
+    // if (link_url !== null && typeof link_url !== 'string') {
+    //     return res.status(400).json({ message: "Invalid 'link_url' value" });
+    // }
+    // if (level !== null && typeof level !== 'number') {
+    //     return res.status(400).json({ message: "Invalid 'level' value" });
+    // }
 
     try {
         const result = await db.query(
             'INSERT INTO tb_links (name, link_url, level, parent_id) VALUES (?, ?, ?, ?)',
             {
-                replacements: [name, link_url, level, parentIdValue],
+                replacements: [name, link_url, level, parent_id],
                 type: QueryTypes.INSERT
             }
         );
 
         res.status(201).json({
-            id: result[0], 
+            id: result[0],
             name,
             link_url,
             level,
-            parent_id: parentIdValue
+            parent_id
         });
     } catch (error) {
         console.error('Error adding link:', error);
@@ -92,22 +96,27 @@ exports.updateLink = async (req, res) => {
 };
 
 // ลบ link
+
 exports.deleteLink = async (req, res) => {
     const { id } = req.params;
+    console.log('Deleting ID:', id); // ✅ Debug เช็คค่าที่ส่งมา
 
     try {
-        const result = await db.query('DELETE FROM tb_links WHERE id = ?', {
+        const [result] = await db.query('DELETE FROM tb_links WHERE id = ?', {
             replacements: [id],
-            type: QueryTypes.DELETE
+            type: QueryTypes.RAW // ✅ เปลี่ยนจาก DELETE เป็น RAW
         });
 
-        if (result[1] === 0) {
-            return res.status(404).json({ message: 'Link not found' });
+        console.log('Delete result:', result); // ✅ Debug ดูค่าที่ได้
+
+        // เช็คจำนวนแถวที่ถูกลบ
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Link not found.' });
         }
 
-        res.json({ message: 'Link deleted successfully' });
+        return res.status(200).json({ message: 'Link deleted successfully.', id });
     } catch (error) {
         console.error('Error deleting link:', error);
-        res.status(500).json({ message: 'Server error', error });
+        return res.status(500).json({ message: 'An error occurred while deleting the link.', error: error.message });
     }
 };
