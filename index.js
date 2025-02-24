@@ -37,9 +37,17 @@ app.use(bodyParser.json());
 // Static files for images in /uploads
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads'), {
   setHeaders: (res, path, stat) => {
-    res.set('Access-Control-Allow-Origin', 'https://lawstd.rmu.ac.th'); // อนุญาตจากโดเมนที่ต้องการ
+    // ตั้งค่า headers ให้อนุญาตการเข้าถึงจากโดเมนที่ต้องการ
+    res.set('Access-Control-Allow-Origin', 'https://lawstd.rmu.ac.th'); // อนุญาตจากโดเมน frontend
     res.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization'); // เพิ่ม headers หากจำเป็น
   }
+}));
+
+// แก้ไขเพิ่มเติมหากมีการใช้งานการ request แบบ OPTIONS
+app.options('/uploads/*', cors({
+  origin: 'https://lawstd.rmu.ac.th', // กำหนด origin ที่อนุญาต
+  methods: 'OPTIONS',
 }));
 
 // Rate Limiting
