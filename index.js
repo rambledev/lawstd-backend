@@ -24,7 +24,7 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:3000','http://localhost:5173', 'https://lawstd.rmu.ac.th'],
+  origin: ['http://localhost:3000', 'http://localhost:5173', 'https://lawstd.rmu.ac.th'],
   methods: ['POST', 'GET', 'OPTIONS', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Accept'],
   credentials: true,
@@ -34,19 +34,18 @@ app.use(helmet());
 app.use(cookieParser());
 app.use(bodyParser.json());
 
+// Static files for images in /uploads
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads'), {
   setHeaders: (res, path, stat) => {
-    res.set('Access-Control-Allow-Origin', '*');
+    res.set('Access-Control-Allow-Origin', 'https://lawstd.rmu.ac.th'); // อนุญาตจากโดเมนที่ต้องการ
     res.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
   }
 }));
 
-
-
 // Rate Limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, 
-  max: 100, 
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
 });
 app.use(limiter);
 
