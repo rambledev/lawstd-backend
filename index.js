@@ -35,6 +35,13 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+app.use('/uploads', express.static('uploads', {
+  setHeaders: (res, path, stat) => {
+    res.set('Access-Control-Allow-Origin', '*');
+  }
+}));
+
+
 // Rate Limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, 
