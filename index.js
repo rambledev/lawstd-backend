@@ -33,13 +33,14 @@ app.use(cors({
 app.use(helmet());
 app.use(cookieParser());
 app.use(bodyParser.json());
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
-app.use('/uploads', express.static('uploads', {
+
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads'), {
   setHeaders: (res, path, stat) => {
     res.set('Access-Control-Allow-Origin', '*');
+    res.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
   }
 }));
+
 
 
 // Rate Limiting
