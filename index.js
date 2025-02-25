@@ -23,12 +23,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173', 'https://lawstd.rmu.ac.th'],
-  methods: ['POST', 'GET', 'OPTIONS', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Accept'],
-  credentials: true,
-}));
+app.use(cors({ origin: '*' }));
 
 app.use(helmet());
 app.use(cookieParser());
