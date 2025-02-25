@@ -33,7 +33,7 @@ app.use(bodyParser.json());
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads'), {
   setHeaders: (res, path, stat) => {
     // ตั้งค่า headers ให้อนุญาตการเข้าถึงจากโดเมนที่ต้องการ
-    res.set('Access-Control-Allow-Origin', 'https://lawstd.rmu.ac.th'); // อนุญาตจากโดเมน frontend
+    res.set('Access-Control-Allow-Origin', '*'); // อนุญาตจากโดเมน frontend
     res.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
     res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization'); // เพิ่ม headers หากจำเป็น
   }
