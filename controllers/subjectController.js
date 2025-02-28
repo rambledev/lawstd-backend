@@ -2,6 +2,20 @@ const db = require('../config/db');
 const { QueryTypes } = require('sequelize');
 const createError = require('http-errors');
 
+const getDataSubjects = async (req, res, next) => {
+  try {
+    const query = 'SELECT * FROM tb_subject ORDER BY sub_code ASC';
+    const subjects = await db.query(query, { type: QueryTypes.SELECT });
+
+    res.json({
+      data: subjects
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+
 // ดึงข้อมูลวิชาทั้งหมด
 const getAllSubjects = async (req, res, next) => {
   try {
