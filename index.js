@@ -41,7 +41,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'public/uploads'), {
 
 // แก้ไขเพิ่มเติมหากมีการใช้งานการ request แบบ OPTIONS
 app.options('/uploads/*', cors({
-  origin: ['http://localhost:5173', 'https://lawstd.rmu.ac.th'] // กำหนด origin ที่อนุญาต
+  origin: 'https://lawstd.rmu.ac.th',
   methods: 'OPTIONS',
 }));
 
