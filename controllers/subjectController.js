@@ -297,5 +297,5 @@ const checkPermissionSub = async (req, res, next) => {
   }
 };
 
-module.exports = { getDataSubject, getAllSubjects, getSubjectByCode, createSubject, updateSubject, deleteSubject, checkPermissionSub };
+module.exports = { getDataSubjects,getDataSubject, getAllSubjects, getSubjectByCode, createSubject, updateSubject, deleteSubject, checkPermissionSub };
 
