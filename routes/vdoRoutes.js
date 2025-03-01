@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get('/:sub_code', vdoController.getVdosBySubjectCode);
 router.post('/', vdoController.addVdo);
-router.post('/update', vdoController.updateVdo);
+router.put('/:vdo_id', vdoController.updateVdo);
 router.delete('/:vdo_id', vdoController.deleteVdo);
 
 router.post('/vdo/view', vdoController.recordView);
