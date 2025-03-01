@@ -12,7 +12,7 @@ const updateVdo = async (req, res, next) => {
     const query = `
       UPDATE tb_vdo
       SET sub_code = ?, vdo_name = ?, vdo_link = ?
-      WHERE vdo_id = ?
+      WHERE id = ?
     `;
     const result = await db.query(query, {
       replacements: [sub_code, vdo_name, vdo_link, vdo_id],
