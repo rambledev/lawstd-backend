@@ -67,32 +67,27 @@ const getAllStudents = async (req, res, next) => {
 
 // ดึงข้อมูลนักศึกษาโดย รหัสวิชา
 const getStudentBySubCode = async (req, res, next) => {
-  const { sub_code } = req.params;
-
   try {
-      // ดึงข้อมูลจาก tb_subject_list โดยใช้ sub_code
+      // ดึงข้อมูลทั้งหมดจาก tb_subject_list
       const query = `
-          SELECT s.*, st.std_name AS student_name, st.std_code AS std_code
-          FROM tb_subject_list s
-          JOIN tb_student st ON s.std_code = st.std_code
-          WHERE s.sub_code = ?`;
+          SELECT * FROM tb_subject_list`;
 
       const result = await db.query(query, {
-          replacements: [sub_code],
           type: QueryTypes.SELECT
       });
 
       // หากไม่พบข้อมูล
       if (!result.length) {
-          return res.status(404).json({ message: 'ไม่พบข้อมูลนักศึกษาสำหรับรหัสวิชานี้' });
+          return res.status(404).json({ message: 'ไม่พบข้อมูล' });
       }
 
-      // ส่งข้อมูลนักศึกษาในรูปแบบ JSON
+      // ส่งข้อมูลในรูปแบบ JSON
       res.json(result);
   } catch (err) {
       next(err); // ส่งต่อข้อผิดพลาดให้กับ middleware ถัดไป
   }
 };
+
 
 // ดึงข้อมูลนักศึกษาโดย ID
 const getStudentById = async (req, res, next) => {
