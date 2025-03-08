@@ -44,7 +44,7 @@ app.options('/uploads/*', cors({
   origin: 'https://lawstd.rmu.ac.th',
   methods: 'OPTIONS',
 }));
-
+app.set('trust proxy', true);
 // Rate Limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
