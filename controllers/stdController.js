@@ -9,9 +9,9 @@ const addStudentToSubject = async (req, res) => {
     console.log("Received data:", req.body);  // เพิ่ม log ดูข้อมูลที่รับมาจาก frontend
 
     // ตรวจสอบข้อมูลที่รับมาว่าถูกต้องหรือไม่
-    if (!sub_code || !std_code || !std_name) {
-      return res.status(400).json({ message: 'ข้อมูลไม่ครบถ้วน' });
-    }
+    // if (!sub_code || !std_code || !std_name) {
+    //   return res.status(400).json({ message: 'ข้อมูลไม่ครบถ้วน' });
+    // }
 
     const query = `
       INSERT INTO tb_subject_list (sub_code, std_code, std_name, status)
@@ -27,7 +27,7 @@ const addStudentToSubject = async (req, res) => {
 
     res.status(200).json({ message: 'เพิ่มนักเรียนในรายวิชาเรียบร้อยแล้ว' });
   } catch (error) {
-    console.error('Error adding student:', error);
+    console.error('Error adding student x:', error);
     res.status(500).json({ message: 'เกิดข้อผิดพลาดในการเพิ่มนักเรียน' });
   }
 };
