@@ -6,21 +6,24 @@ const createError = require('../middlewares/errorHandler').createError;
 const addStudentToSubject = async (req, res) => {
   try {
     const { sub_code, std_code, std_name, status } = req.body;
+    console.log("Received data:", req.body);  // เพิ่ม log ดูข้อมูลที่รับมาจาก frontend
 
     // ตรวจสอบข้อมูลที่รับมาว่าถูกต้องหรือไม่
     if (!sub_code || !std_code || !std_name) {
       return res.status(400).json({ message: 'ข้อมูลไม่ครบถ้วน' });
     }
 
-    // เพิ่มข้อมูล student ใน subject list โดยใช้ db.query
     const query = `
       INSERT INTO tb_subject_list (sub_code, std_code, std_name, status)
       VALUES (?, ?, ?, ?)
     `;
+    console.log("Executing query:", query);  // เพิ่ม log ดู query ที่จะทำงาน
     const result = await db.query(query, {
       replacements: [sub_code, std_code, std_name, status],
       type: QueryTypes.INSERT
     });
+
+    console.log("Insert result:", result);  // เพิ่ม log ดูผลลัพธ์การ insert
 
     res.status(200).json({ message: 'เพิ่มนักเรียนในรายวิชาเรียบร้อยแล้ว' });
   } catch (error) {
@@ -28,6 +31,7 @@ const addStudentToSubject = async (req, res) => {
     res.status(500).json({ message: 'เกิดข้อผิดพลาดในการเพิ่มนักเรียน' });
   }
 };
+
 
 
 
