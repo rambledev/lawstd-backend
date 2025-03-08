@@ -34,9 +34,25 @@ const addStudentToSubject = async (req, res) => {
     const { sub_code, std_code, std_name, status } = req.body;
     console.log("Received data:", req.body); // log ข้อมูลที่ได้รับ
 
-    // ตรวจสอบข้อมูล
+    // ตรวจสอบข้อมูลที่รับเข้ามา
     if (!sub_code || !std_code || !std_name || status === undefined) {
       return res.status(400).json({ message: 'ข้อมูลไม่ครบถ้วน' });
+    }
+
+    // ตรวจสอบว่ามีนักเรียนที่ในวิชาแล้วหรือไม่
+    const existQuery = `
+      SELECT * FROM tb_subject_list 
+      WHERE sub_code = ? AND std_code = ?
+    `;
+    
+    const existingEntry = await db.query(existQuery, {
+      replacements: [sub_code, std_code],
+      type: QueryTypes.SELECT // ใช้ SELECT เพื่อตรวจสอบข้อมูล
+    });
+
+    // ถ้ามีข้อมูลอยู่แล้ว จะคืนค่าข้อความแจ้งเตือน
+    if (existingEntry.length > 0) {
+      return res.status(409).json({ message: 'นักเรียนคนนี้มีอยู่ในรายวิชานี้แล้ว' });
     }
 
     const query = `
@@ -44,7 +60,7 @@ const addStudentToSubject = async (req, res) => {
       VALUES (?, ?, ?, ?)
     `;
     
-    const result = await db.query(query, {
+    await db.query(query, {
       replacements: [sub_code, std_code, std_name, status],
       type: QueryTypes.INSERT
     });
