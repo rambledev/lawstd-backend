@@ -32,29 +32,32 @@ const getAuthorizedStudents = async (req, res, next) => {
 const addStudentToSubject = async (req, res) => {
   try {
     const { sub_code, std_code, std_name, status } = req.body;
-    console.log("Received data:", req.body);  // เพิ่ม log ดูข้อมูลที่รับมาจาก frontend
+    console.log("Received data:", req.body); // เพิ่ม log ดูข้อมูลที่รับมาจาก frontend
 
     // ตรวจสอบข้อมูลที่รับมาว่าถูกต้องหรือไม่
-    // if (!sub_code || !std_code || !std_name) {
-    //   return res.status(400).json({ message: 'ข้อมูลไม่ครบถ้วน' });
-    // }
+    if (!sub_code || !std_code || !std_name || status === undefined) { // ตรวจสอบว่าข้อมูลไม่ว่าง
+      return res.status(400).json({ message: 'ข้อมูลไม่ครบถ้วน' });
+    }
 
     const query = `
       INSERT INTO tb_subject_list (sub_code, std_code, std_name, status)
       VALUES (?, ?, ?, ?)
     `;
-    console.log("Executing query:", query);  // เพิ่ม log ดู query ที่จะทำงาน
+    
+    console.log("Executing query:", query); // เพิ่ม log ดู query ที่จะทำงาน
+
+    // ทำการ query โดยใช้ replacements
     const result = await db.query(query, {
       replacements: [sub_code, std_code, std_name, status],
-      type: QueryTypes.INSERT
+      type: QueryTypes.INSERT // ใช้ QueryTypes.INSERT ให้ถูกต้อง
     });
 
-    console.log("Insert result:", result);  // เพิ่ม log ดูผลลัพธ์การ insert
+    console.log("Insert result:", result); // เพิ่ม log ดูผลลัพธ์การ insert
 
     res.status(200).json({ message: 'เพิ่มนักเรียนในรายวิชาเรียบร้อยแล้ว' });
   } catch (error) {
-    console.error('Error adding student x:', error);
-    res.status(500).json({ message: 'เกิดข้อผิดพลาดในการเพิ่มนักเรียน' });
+    console.error('Error adding student:', error);
+    res.status(500).json({ message: 'เกิดข้อผิดพลาดในการเพิ่มนักเรียน', error: error.message || error });
   }
 };
 
