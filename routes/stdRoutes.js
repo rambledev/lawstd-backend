@@ -16,4 +16,6 @@ router.delete('/students-list/:id', stdController.deleteStudentList);
 
 router.post('/subject-list', stdController.addStudentToSubject);
 
+router.get('/authorized-students', stdController.getAuthorizedStudents);
+
 module.exports = router;

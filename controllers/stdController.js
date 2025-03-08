@@ -2,6 +2,32 @@ const db = require('../config/db');
 const { QueryTypes } = require('sequelize');
 const createError = require('../middlewares/errorHandler').createError;
 
+
+// stdController.js
+
+const getAuthorizedStudents = async (req, res, next) => {
+  try {
+    const query = `
+      SELECT * FROM tb_subject_list
+    `;
+    const result = await db.query(query, {
+      type: QueryTypes.SELECT
+    });
+
+    // ตรวจสอบว่ามีข้อมูลหรือไม่
+    if (!result.length) {
+      return res.status(404).json({ message: 'ไม่พบข้อมูลนักศึกษาที่ได้รับอนุญาต' });
+    }
+
+    res.json(result); // ส่งข้อมูลนักศึกษา
+  } catch (err) {
+    next(err); // ส่งต่อข้อผิดพลาด
+  }
+};
+
+// ... (existing functions)
+
+
 // เพิ่ม นศ. เข้าวิชา
 const addStudentToSubject = async (req, res) => {
   try {
