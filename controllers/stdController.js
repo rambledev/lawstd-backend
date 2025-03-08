@@ -56,8 +56,8 @@ const addStudentToSubject = async (req, res) => {
     }
 
     const query = `
-      INSERT INTO tb_subject_list (sub_code, std_code, std_name, status)
-      VALUES (?, ?, ?, ?)
+      INSERT INTO tb_subject_list ( std_code, std_name, status)
+      VALUES ( ?, ?, ?)
     `;
     
     await db.query(query, {
