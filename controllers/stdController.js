@@ -245,5 +245,6 @@ module.exports = {
   getStudentBySubCode,
   searchStudents,
   addStudentToSubject,
-  deleteStudentList
+  deleteStudentList,
+  getAuthorizedStudents
 };
