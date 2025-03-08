@@ -32,10 +32,10 @@ const getAuthorizedStudents = async (req, res, next) => {
 const addStudentToSubject = async (req, res) => {
   try {
     const { sub_code, std_code, std_name, status } = req.body;
-    console.log("Received data:", req.body); // เพิ่ม log ดูข้อมูลที่รับมาจาก frontend
+    console.log("Received data:", req.body); // log ข้อมูลที่ได้รับ
 
-    // ตรวจสอบข้อมูลที่รับมาว่าถูกต้องหรือไม่
-    if (!sub_code || !std_code || !std_name || status === undefined) { // ตรวจสอบว่าข้อมูลไม่ว่าง
+    // ตรวจสอบข้อมูล
+    if (!sub_code || !std_code || !std_name || status === undefined) {
       return res.status(400).json({ message: 'ข้อมูลไม่ครบถ้วน' });
     }
 
@@ -44,15 +44,10 @@ const addStudentToSubject = async (req, res) => {
       VALUES (?, ?, ?, ?)
     `;
     
-    console.log("Executing query:", query); // เพิ่ม log ดู query ที่จะทำงาน
-
-    // ทำการ query โดยใช้ replacements
     const result = await db.query(query, {
       replacements: [sub_code, std_code, std_name, status],
-      type: QueryTypes.INSERT // ใช้ QueryTypes.INSERT ให้ถูกต้อง
+      type: QueryTypes.INSERT
     });
-
-    console.log("Insert result:", result); // เพิ่ม log ดูผลลัพธ์การ insert
 
     res.status(200).json({ message: 'เพิ่มนักเรียนในรายวิชาเรียบร้อยแล้ว' });
   } catch (error) {
