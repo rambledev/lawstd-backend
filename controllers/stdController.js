@@ -34,10 +34,7 @@ const addStudentToSubject = async (req, res) => {
     const { sub_code, std_code, std_name, status } = req.body;
     console.log("Received data:", req.body); // log ข้อมูลที่ได้รับ
 
-    // ตรวจสอบข้อมูลที่รับเข้ามา
-    if (!sub_code || !std_code || !std_name || status === undefined) {
-      return res.status(400).json({ message: 'ข้อมูลไม่ครบถ้วน' });
-    }
+    
 
     // ตรวจสอบว่ามีนักเรียนที่ในวิชาแล้วหรือไม่
     const existQuery = `
