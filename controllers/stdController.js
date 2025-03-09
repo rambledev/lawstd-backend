@@ -31,34 +31,36 @@ const getAuthorizedStudents = async (req, res, next) => {
 // เพิ่ม นศ. เข้าวิชา
 const addStudentToSubject = async (req, res) => {
   try {
-    const { sub_code, std_code, std_name, status } = req.body;
-    console.log("Received data:", req.body); // log ข้อมูลที่ได้รับ
+    const {  std_code, std_name, status } = req.body;
 
-    
+    // ตรวจสอบว่ามีข้อมูลที่ต้องการก่อน
+    if ( !std_code || !std_name || status === undefined) {
+      return res.status(400).json({ message: 'กรุณาระบุข้อมูลให้ครบถ้วน' });
+    }
 
-    // ตรวจสอบว่ามีนักเรียนที่ในวิชาแล้วหรือไม่
+    // ตรวจสอบว่านักเรียนมีอยู่ในรายวิชานี้หรือไม่
     const existQuery = `
       SELECT * FROM tb_subject_list 
-      WHERE sub_code = ? AND std_code = ?
+      WHERE  std_code = ?
     `;
     
     const existingEntry = await db.query(existQuery, {
-      replacements: [sub_code, std_code],
-      type: QueryTypes.SELECT // ใช้ SELECT เพื่อตรวจสอบข้อมูล
+      replacements: [ std_code],
+      type: QueryTypes.SELECT
     });
 
-    // ถ้ามีข้อมูลอยู่แล้ว จะคืนค่าข้อความแจ้งเตือน
     if (existingEntry.length > 0) {
       return res.status(409).json({ message: 'นักเรียนคนนี้มีอยู่ในรายวิชานี้แล้ว' });
     }
 
+    // คำสั่ง INSERT เข้าสู่ฐานข้อมูล
     const query = `
       INSERT INTO tb_subject_list ( std_code, std_name, status)
       VALUES ( ?, ?, ?)
     `;
-    
+
     await db.query(query, {
-      replacements: [std_code, std_name, status],
+      replacements: [ std_code, std_name, status], // ต้องแน่ใจว่ามีการส่งค่าครบ 4 ค่า
       type: QueryTypes.INSERT
     });
 
@@ -68,6 +70,7 @@ const addStudentToSubject = async (req, res) => {
     res.status(500).json({ message: 'เกิดข้อผิดพลาดในการเพิ่มนักเรียน', error: error.message || error });
   }
 };
+
 
 
 
