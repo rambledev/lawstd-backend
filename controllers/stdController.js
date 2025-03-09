@@ -58,7 +58,7 @@ const addStudentToSubject = async (req, res) => {
     `;
     
     await db.query(query, {
-      replacements: [sub_code, std_code, std_name, status],
+      replacements: [std_code, std_name, status],
       type: QueryTypes.INSERT
     });
 
