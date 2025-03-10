@@ -175,13 +175,10 @@ const deleteStudentList = async (req, res, next) => {
   const { id } = req.params;  // รับรหัสนักศึกษา
   const { sub_code } = req.query;  // รับรหัสวิชาจาก query string
 
-  if (!sub_code) {
-    return res.status(400).json({ message: 'Subject code is required' });  // ถ้าไม่มีรหัสวิชาให้แจ้งข้อผิดพลาด
-  }
 
   try {
-    const query = 'DELETE FROM tb_subject_list WHERE std_code = ? AND sub_code = ?';
-    const result = await db.query(query, { replacements: [id, sub_code], type: QueryTypes.DELETE });
+    const query = 'DELETE FROM tb_subject_list WHERE std_code = ? ';
+    const result = await db.query(query, { replacements: [id], type: QueryTypes.DELETE });
 
     // ตรวจสอบว่ามีการลบข้อมูลหรือไม่
     if (result === 0) {  // result จะเป็นจำนวนแถวที่ถูกลบ
