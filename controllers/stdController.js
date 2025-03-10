@@ -4,28 +4,28 @@ const createError = require('../middlewares/errorHandler').createError;
 
 
 // stdController.js
-
 const getAuthorizedStudents = async (req, res, next) => {
+  console.log("It's Meeeeeeeee."); // log เพื่อทำการ debug
   try {
-    const query = `
-      SELECT * FROM tb_subject_list
-    `;
+    const query = `SELECT * FROM db_laws.tb_subject_list;`; // ตรวจสอบ SQL ที่จะใช้
+
     const result = await db.query(query, {
-      type: QueryTypes.SELECT
+      type: QueryTypes.SELECT,
     });
 
-    // ตรวจสอบว่ามีข้อมูลหรือไม่
-    if (!result.length) {
+    console.log('Query Result:', result); // Log ผลลัพธ์ที่ได้เพื่อการดีบัก
+
+    if (!result || !result.length) {
       return res.status(404).json({ message: 'ไม่พบข้อมูลนักศึกษาที่ได้รับอนุญาต' });
     }
 
-    res.json(result); // ส่งข้อมูลนักศึกษา
+    res.json(result);
   } catch (err) {
-    next(err); // ส่งต่อข้อผิดพลาด
+    console.error('Database Query Error:', err);
+    return res.status(500).json({ message: 'เกิดข้อผิดพลาดในการดึงข้อมูล', error: err.message });
   }
 };
 
-// ... (existing functions)
 
 
 // เพิ่ม นศ. เข้าวิชา
